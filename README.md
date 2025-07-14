@@ -69,53 +69,67 @@ allowed_extensions:
 
 ## Example Workflow
 
-1. Create a task:
+1.  Create a task:
 
-   ```bash
-   curl -X POST http://localhost:8080/task
-   ```
+    ```bash
+    curl -X POST http://localhost:8080/task
+    ```
 
-   Response:
+    Response:
 
-   ```json
-   { "task_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef" }
-   ```
-2. Add URLs to the task (repeat up to max_files_per_task times):
+    ```json
+    { "task_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee" }
+    ```
 
-   ```bash
-   curl -X POST http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef/url \
-     -H "Content-Type: application/json" \
-     -d '{"url": "https://www.tutorialspoint.com/go/go_tutorial.pdf"}'
-   ```
-3. Check the task status:
+2.  Add URLs to the task (repeat up to max_files_per_task times):
 
-   ```bash
-   curl http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef
-   ```
+    ```bash
+    curl -X POST http://localhost:8080/task/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/url \
+      -H "Content-Type: application/json" \
+      -d '{"url": "https://www.tutorialspoint.com/go/go_tutorial.pdf"}'
+    ```
 
-   Possible responses:
+3.  Check the task status:
 
-   * Pending:
-     ```json
-     { "status": "pending", "errors": [] }
-     ```
-   * Running:
-     ```json
-     { "status": "running", "errors": [] }
-     ```
-   * Completed:
-     ```json
-     { "status": "completed", "result_url": "/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip", "errors": [] }
-     ```
-   * Failed:
-     ```json
-     { "status": "failed", "errors": ["list", "of", "errors"] }
-     ```
-4. Download the archive (if the status is “completed”):
+    ```bash
+    curl http://localhost:8080/task/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+    ```
 
-   ```bash
-   curl -O http://localhost:8080/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip
-   ```
+    Possible responses:
+
+    *   Pending:
+
+        ```json
+        { "status": "pending", "errors": [] }
+        ```
+
+    *   Running:
+
+        ```json
+        { "status": "running", "errors": [] }
+        ```
+
+    *   Completed:
+
+        ```json
+        { "status": "completed", "result_url": "/static/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee.zip", "errors": [] }
+        ```
+
+    *   Failed:
+
+        ```json
+        { "status": "failed", "errors": ["list", "of", "errors"] }
+        ```
+
+4.  Download the archive (if the status is "completed"):
+
+    ```bash
+    curl -O http://localhost:8080/static/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee.zip
+    ```
+
+**Important:**
+
+* Replace `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` with **different** generated UUIDs to show different workflows.
 
 ## Notes
 
