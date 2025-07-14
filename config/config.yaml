@@ -1,0 +1,7 @@
+port: 8080
+max_tasks: 3
+max_files_per_task: 3
+allowed_extensions:
+  - .pdf
+  - .jpeg
+  - .jpg
