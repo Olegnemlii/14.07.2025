@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"runtime"
-	"github.com/Olegnemlii/14.07.2025/api"
 	"github.com/Olegnemlii/14.07.2025/config"
+    "github.com/Olegnemlii/14.07.2025/task"
 )
 
 func main() {
