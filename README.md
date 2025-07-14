@@ -1,3 +1,4 @@
+
 # Archive Creation Service
 
 This service creates ZIP archives from a list of URLs.
@@ -27,87 +28,101 @@ max_files_per_task: 3
 allowed_extensions:
   - .pdf
   - .jpeg
-port: The port the server will listen on (e.g., “8080”).
-max_tasks: The maximum number of concurrent archive creation tasks.
-max_files_per_task: The maximum number of files allowed per archive.
-allowed_extensions: A list of allowed file extensions (lowercase).
-API Endpoints
-POST /task: Create a new task.
+```
 
-Returns: {"task_id": "<uuid>"}
-GET /task/{id}: Get the status of a task.
+* `port`: The port the server will listen on (e.g., “8080”).
+* `max_tasks`: The maximum number of concurrent archive creation tasks.
+* `max_files_per_task`: The maximum number of files allowed per archive.
+* `allowed_extensions`: A list of allowed file extensions (lowercase).
 
-Returns:
+## API Endpoints
 
-json
+* **POST /task** : Create a new task.
+* Returns: `{"task_id": "<uuid>"}`
+* **GET /task/{id}** : Get the status of a task.
+* Returns:
+  ```json
+  {
+    "status": "pending | running | completed | failed",
+    "result_url": "/static/<filename>.zip" (only if status is "completed"),
+    "errors": ["list", "of", "errors"]
+  }
+  ```
+* **POST /task/{id}/url** : Add a URL to the task.
+* Body: `{"url": "<url>"}`
+* Returns: `{"message": "URL added"}`
 
-{
-  "status": "pending | running | completed | failed",
-  "result_url": "/static/<filename>.zip" (only if status is "completed"),
-  "errors": ["list", "of", "errors"]
-}
-POST /task/{id}/url: Add a URL to the task.
+## Usage
 
-Body: {"url": "<url>"}
-Returns: {"message": "URL added"}
-Usage
-Build the application:
-bash
+1. Build the application:
 
-go build -o 14.07.2025 main.go
-Run the application:
-bash
+   ```bash
+   go build -o 14.07.2025 main.go
+   ```
+2. Run the application:
 
-./14.07.2025
-The server will start on the port specified in config.yaml (default: 8080).
+   ```bash
+   ./14.07.2025
+   ```
 
-Example Workflow
-Create a task:
-bash
+   The server will start on the port specified in `config.yaml` (default: 8080).
 
-curl -X POST http://localhost:8080/task
-Response:
+## Example Workflow
 
-json
+1. Create a task:
 
-{ "task_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef" }
-Add URLs to the task (repeat up to max_files_per_task times):
-bash
+   ```bash
+   curl -X POST http://localhost:8080/task
+   ```
 
-curl -X POST http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef/url \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://www.tutorialspoint.com/go/go_tutorial.pdf"}'
-Check the task status:
-bash
+   Response:
 
-curl http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef
-Possible responses:
+   ```json
+   { "task_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef" }
+   ```
+2. Add URLs to the task (repeat up to max_files_per_task times):
 
-Pending:
-json
+   ```bash
+   curl -X POST http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef/url \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://www.tutorialspoint.com/go/go_tutorial.pdf"}'
+   ```
+3. Check the task status:
 
-{ "status": "pending", "errors": [] }
-Running:
-json
+   ```bash
+   curl http://localhost:8080/task/a1b2c3d4-e5f6-7890-1234-567890abcdef
+   ```
 
-{ "status": "running", "errors": [] }
-Completed:
-json
+   Possible responses:
 
-{ "status": "completed", "result_url": "/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip", "errors": [] }
-Failed:
-json
+   * Pending:
+     ```json
+     { "status": "pending", "errors": [] }
+     ```
+   * Running:
+     ```json
+     { "status": "running", "errors": [] }
+     ```
+   * Completed:
+     ```json
+     { "status": "completed", "result_url": "/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip", "errors": [] }
+     ```
+   * Failed:
+     ```json
+     { "status": "failed", "errors": ["list", "of", "errors"] }
+     ```
+4. Download the archive (if the status is “completed”):
 
-{ "status": "failed", "errors": ["list", "of", "errors"] }
-Download the archive (if the status is “completed”):
-bash
+   ```bash
+   curl -O http://localhost:8080/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip
+   ```
 
-curl -O http://localhost:8080/static/a1b2c3d4-e5f6-7890-1234-567890abcdef.zip
-Notes
-The service saves created ZIP archives in the static/ directory.
-Error handling includes reporting inaccessible resources while packaging available ones.
-Concurrency is managed to allow a maximum of 3 active archive creation tasks.
-Concurrency
+## Notes
+
+* The service saves created ZIP archives in the `static/` directory.
+* Error handling includes reporting inaccessible resources while packaging available ones.
+* Concurrency is managed to allow a maximum of 3 active archive creation tasks.
+
+## Concurrency
+
 To run tasks concurrently, use multiple terminals.
-
-
